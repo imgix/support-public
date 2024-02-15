@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react';
-import { Box, Select, MenuItem, Typography, FormControl, } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Box, Select, MenuItem, Typography, FormControl, CircularProgress, } from '@mui/material';
 
 export default function ImageDisplay() {
 
@@ -17,6 +17,17 @@ export default function ImageDisplay() {
   let [currentImage, set_currentImage] = useState(imageOptions[1]);
   let [imageUrl, setImageUrl] = useState(imageOptions[1].url);
   let [width, setWidth] = useState(imageOptions[1].width);
+  let [isLoading, setIsLoading] = useState(false);
+
+  // Preload images
+  useEffect(() => {
+    imageOptions.forEach(option => {
+      const img = new Image();
+      img.src = option.url;
+    });
+    // Optionally, you can implement onLoad and onError handlers for each image
+    // to track the loading progress or handle errors
+  }, []); // The empty dependency array ensures this effect runs only once after the initial render
 
   // Function to handle the selection of a new image URL
   const handleChange = (event) => {
@@ -25,8 +36,19 @@ export default function ImageDisplay() {
     setImageUrl(data.url);
     set_currentImage(data)
     setWidth(data.width)
+    setIsLoading(true); // Set loading to true when a new image is selected
   };
 
+  // Function to handle when image has finished loading
+  const handleImageLoad = () => {
+    setIsLoading(false); // Set loading to false when image is loaded
+  };
+
+  // Function to handle when image fails to load
+  const handleImageError = () => {
+    setIsLoading(false); // Also set loading to false on error
+    // You can also handle error cases more gracefully here
+  };
   return (
     <Box
       sx={{
@@ -36,6 +58,7 @@ export default function ImageDisplay() {
         p: 4,
       }}
     >
+
       {/* Dropdown for selecting an image URL */}
       <FormControl sx={{ mb: 2 }}>
         <Select
@@ -57,7 +80,7 @@ export default function ImageDisplay() {
         Rendered Width: 500px
       </Typography>
       <Typography variant="body1">
-          Intrinsic Width: {width}px
+        Intrinsic Width: {width}px
       </Typography>
       {/* Image container */}
       <Box
@@ -69,17 +92,29 @@ export default function ImageDisplay() {
           justifyContent: 'center',
           alignItems: 'center',
           border: '1px solid #ccc', // Optional, for visual boundary
+          position: 'relative', // For absolute positioning of loading indicator
         }}
       >
+        {/* Loading icon, displayed if isLoading is true */}
+        {isLoading && (
+          <CircularProgress
+            style={{
+              position: 'absolute', // Center the loading indicator
+            }}
+          />
+        )}
         {/* Image element, displayed if imageUrl is not empty */}
         {imageUrl && (
           <img
             src={imageUrl}
             alt="Displayed"
+            onLoad={handleImageLoad} // Call handleImageLoad when image loads
+            onError={handleImageError} // Call handleImageError when there's an error
             style={{
               maxWidth: '100%',
               maxHeight: '100%',
               width: '100%',
+              display: isLoading ? 'none' : 'block', // Hide image while loading
             }}
           />
         )}
