@@ -30,8 +30,8 @@ export default function ImageDisplay() {
   }, []); // The empty dependency array ensures this effect runs only once after the initial render
 
   // Function to handle the selection of a new image URL
-  const handleChange = (event) => {
-    let data = JSON.parse(event.target.value);
+  const handleChange = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+    let data = JSON.parse(event.target.value as string);
     console.log(data)
     setImageUrl(data.url);
     set_currentImage(data)
