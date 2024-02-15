@@ -66,7 +66,7 @@ export default function ImageDisplay() {
           id="image-picker"
           value={JSON.stringify(currentImage)}
           label="Image URL"
-          onChange={handleChange}
+          onChange={handleChange as any}
           sx={{ mb: 2, width: 250 }} // Adjust the width as needed
         >
           {imageOptions.map((option) => (
